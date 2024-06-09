@@ -8,6 +8,9 @@ import static helpers.CustomAllureListener.withCustomTemplates;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.assertj.core.api.Assertions.assertThat;
+import static specs.LoginSpecs.loginRequestSpec;
+import static specs.LoginSpecs.loginResponseSpec;
+
 import io.qameta.allure.restassured.AllureRestAssured;
 
 public class ReqresInLombokTest {
@@ -77,6 +80,23 @@ public class ReqresInLombokTest {
                 .log().status()
                 .log().body()
                 .statusCode(200)
+                .extract().as(LoginResponseLombokModel.class);
+
+        assertThat(loginResponse.getToken()).isEqualTo("QpwL5tke4Pnpja7X4");
+    }
+    @Test
+    void loginWithSpecsTest() {
+        LoginBodyLombokModel loginBody = new LoginBodyLombokModel();
+        loginBody.setEmail("eve.holt@reqres.in");
+        loginBody.setPassword("cityslicka");
+
+        LoginResponseLombokModel loginResponse = given(loginRequestSpec)
+
+                .body(loginBody)
+                .when()
+                .post("/login")
+                .then()
+                .spec(loginResponseSpec)
                 .extract().as(LoginResponseLombokModel.class);
 
         assertThat(loginResponse.getToken()).isEqualTo("QpwL5tke4Pnpja7X4");
